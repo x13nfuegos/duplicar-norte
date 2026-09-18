@@ -3,6 +3,24 @@ import VimeoEmbed from "./VimeoEmbed";
 import Galeria from "./Galeria";
 
 /**
+ * Si un bloque le falta el dato principal (fotos, URL, modelo 3D), todavía no
+ * está listo para mostrarse a un visitante. Sirve tanto para que la página no
+ * arme una `<section>` vacía como para que `BlockRenderer` no dibuje nada.
+ */
+export function bloqueCompleto(bloque: Block): boolean {
+  switch (bloque.type) {
+    case "gallery":
+      return bloque.data.images.length > 0;
+    case "infographic":
+      return Boolean(bloque.data.url);
+    case "sketchfab":
+      return Boolean(bloque.data.modelId);
+    default:
+      return true;
+  }
+}
+
+/**
  * Renderiza un bloque de una publicación.
  *
  * Cada tipo de bloque es una pieza autónoma: el backoffice los ordena y esta
@@ -40,7 +58,7 @@ export default function BlockRenderer({
       return <BloquePasos heading={bloque.data.heading} items={bloque.data.items} />;
 
     case "gallery":
-      if (bloque.data.images.length === 0) return <Pendiente que="la galería de fotos" />;
+      if (!bloqueCompleto(bloque)) return null;
       return (
         <figure className="space-y-3">
           <Galeria imagenes={bloque.data.images} />
@@ -49,7 +67,7 @@ export default function BlockRenderer({
       );
 
     case "infographic":
-      if (!bloque.data.url) return <Pendiente que="la infografía" />;
+      if (!bloqueCompleto(bloque)) return null;
       // Modo "embed": la URL es una infografía interactiva que corre en un
       // iframe a todo el ancho, con el mismo marco que el modelo de Sketchfab.
       // Sin `modo` (contenido viejo) o en "imagen", la <img> de siempre.
@@ -85,9 +103,7 @@ export default function BlockRenderer({
       );
 
     case "sketchfab":
-      // Sin ID, Sketchfab devuelve su propio 404 dentro del iframe. Preferimos
-      // el mismo aviso de "falta cargar" que usan la galería y la infografía.
-      if (!bloque.data.modelId) return <Pendiente que="el modelo 3D de Sketchfab" />;
+      if (!bloqueCompleto(bloque)) return null;
       return (
         <figure className="space-y-3">
           <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-line bg-deep">
@@ -195,13 +211,4 @@ function BloquePasos({
 
 function Epigrafe({ children }: { children: React.ReactNode }) {
   return <figcaption className="text-[12.5px] text-ink-faint">{children}</figcaption>;
-}
-
-/** Marca visible —solo en el sitio, no oculta— de que falta cargar un asset. */
-function Pendiente({ que }: { que: string }) {
-  return (
-    <p className="label-tech rounded-lg border border-dashed border-line px-4 py-6 text-center text-ink-faint">
-      Falta cargar {que}
-    </p>
-  );
 }

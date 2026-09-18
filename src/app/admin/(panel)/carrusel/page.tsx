@@ -8,14 +8,12 @@ export default async function CarruselPage() {
     <main className="mx-auto max-w-4xl px-4 py-8 md:px-8">
       <header className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight text-ink">Carrusel</h1>
-        <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-ink-soft">
-          Las filas que se ven bajo el mapa, en orden. La primera es la que queda visible con el
-          cajón contraído.
-        </p>
-        <p className="mt-3 max-w-2xl rounded-lg border border-line bg-surface px-3.5 py-2.5 text-[12.5px] leading-relaxed text-ink-soft">
-          El carrusel muestra <strong className="text-ink">solo los videos de la serie</strong>. Si
-          agregás una publicación del mapa a una fila, no va a aparecer: a esas se llega desde su
-          punto en la traza.
+        <p className="mt-3 max-w-2xl rounded-lg border border-amber/40 bg-amber/10 px-3.5 py-2.5 text-[12.5px] leading-relaxed text-amber">
+          Esta pantalla ya no tiene efecto en el sitio: el carrusel de la home ahora se arma solo,
+          con todo lo publicado (especiales y simples), ordenado por el campo{" "}
+          <strong>&quot;Orden&quot;</strong> de cada contenido. Para cambiar qué aparece o en qué
+          orden, editá ese campo desde &quot;Contenidos&quot; — organizar filas acá no cambia nada
+          en el sitio.
         </p>
       </header>
 

@@ -110,6 +110,16 @@ export default function SelectorPunto({ lat, lng, onChange, error }: Props) {
 
   return (
     <div className="space-y-3">
+      {/* Proactivo, no solo reactivo al error: sin esto, alguien puede
+          completar toda la ficha y enterarse recién al guardar —y sin
+          entender por qué— de que a un especial le falta este paso. */}
+      {lat === null && (
+        <p className="rounded-lg border border-amber/40 bg-amber/10 px-3.5 py-2.5 text-[13px] text-amber">
+          Para poder guardar, primero elegí un punto acá abajo: tocá una estación de la lista o
+          hacé clic en el mapa.
+        </p>
+      )}
+
       <Etiqueta
         error={error}
         ayuda="Elegí una estación, hacé clic en el mapa o pegá las coordenadas."

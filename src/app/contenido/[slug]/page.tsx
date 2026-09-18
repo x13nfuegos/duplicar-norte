@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import Cover from "@/components/Cover";
 import Compartir from "@/components/Compartir";
-import BlockRenderer from "@/components/blocks/BlockRenderer";
+import BlockRenderer, { bloqueCompleto } from "@/components/blocks/BlockRenderer";
 import { getContentBySlug, getEspeciales } from "@/lib/content/repository";
 import { formatDuracion } from "@/lib/format";
 import type { Block, Content } from "@/lib/types";
@@ -34,7 +34,11 @@ export default async function PublicacionPage(props: PageProps<"/contenido/[slug
   const indice = especiales.findIndex((c) => c.slug === slug);
   const siguiente = indice >= 0 ? especiales[(indice + 1) % especiales.length] : null;
 
-  const { destacado, resto } = separarDestacado(conVideoPrincipal(contenido));
+  // Un bloque al que le falta el dato principal (fotos, URL, modelo 3D)
+  // todavía no está listo para mostrarse: se omite en vez de dejar un aviso
+  // de "falta cargar" a la vista de cualquier visitante.
+  const { destacado, resto: restoCrudo } = separarDestacado(conVideoPrincipal(contenido));
+  const resto = restoCrudo.filter(bloqueCompleto);
 
   return (
     <div className="min-h-dvh bg-abyss">
