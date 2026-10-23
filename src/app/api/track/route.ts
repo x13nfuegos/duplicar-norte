@@ -57,6 +57,12 @@ function ciudad(headers: Headers): string | null {
   }
 }
 
+/** Dominio en el que ocurrió el evento, para separar los sitios en el dashboard. */
+function dominio(headers: Headers): string | null {
+  const crudo = headers.get("x-forwarded-host") ?? headers.get("host");
+  return crudo?.split(",")[0].trim().toLowerCase().slice(0, 100) || null;
+}
+
 /** Solo valores simples y pocos: es un cajón de detalles, no un volcado. */
 function propiedades(valor: unknown): Record<string, string | number | boolean> {
   const limpio: Record<string, string | number | boolean> = {};
@@ -113,7 +119,7 @@ export async function POST(request: Request) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  const { error } = await supabase.from("analytics_events").insert({
+  const fila = {
     visitor_id: visitorId,
     session_id: sessionId,
     type,
@@ -126,7 +132,15 @@ export async function POST(request: Request) {
     city: ciudad(request.headers),
     duration_ms: type === "engagement" ? duracion : null,
     props: type === "event" ? propiedades(cuerpo.props) : {},
-  });
+  };
+
+  let { error } = await supabase.from("analytics_events").insert({ ...fila, host: dominio(request.headers) });
+
+  // PGRST204: la columna `host` todavía no existe (falta correr la migración
+  // 0004). Se guarda igual, sin sitio, en vez de perder el evento.
+  if (error?.code === "PGRST204") {
+    ({ error } = await supabase.from("analytics_events").insert(fila));
+  }
 
   // Sin esto, una tabla que falta o una clave de otro proyecto pasarían
   // inadvertidas: el navegador siempre recibe 204.
