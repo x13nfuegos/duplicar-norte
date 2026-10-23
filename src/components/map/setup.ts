@@ -1,4 +1,7 @@
 import { setWorkerUrl } from "maplibre-gl";
+// Los estilos del mapa (70 KB) viajan con el mapa y no con el layout raíz: así
+// /serie y las fichas, que no dibujan ningún mapa, no los descargan.
+import "maplibre-gl/dist/maplibre-gl.css";
 
 /**
  * MapLibre arma la URL de su worker a partir de `import.meta.url` del bundle

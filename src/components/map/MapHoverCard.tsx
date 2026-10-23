@@ -47,6 +47,7 @@ export default function MapHoverCard({ contenido, x, y, onMouseEnter, onMouseLea
           alt={contenido.title}
           className={bloqueado ? "grayscale" : ""}
           etiqueta={contenido.locationName}
+          tamanoVimeo="640"
         />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-abyss/95 to-transparent" />
         {contenido.kp && !bloqueado && (

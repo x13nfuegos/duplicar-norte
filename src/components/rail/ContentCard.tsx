@@ -36,6 +36,7 @@ export default function ContentCard({ contenido, destacado = false }: Props) {
             bloqueado ? "grayscale" : "group-hover:scale-[1.04]"
           }`}
           etiqueta={contenido.locationName}
+          tamanoVimeo="640"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-abyss/85 via-transparent to-transparent" />
 

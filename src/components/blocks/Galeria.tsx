@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { track } from "@/lib/analytics/client";
 
 interface Props {
   imagenes: { url: string; alt?: string }[];
@@ -35,7 +36,10 @@ export default function Galeria({ imagenes }: Props) {
           <button
             key={img.url + i}
             type="button"
-            onClick={() => setAbierta(i)}
+            onClick={() => {
+              track("gallery_open");
+              setAbierta(i);
+            }}
             className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-line outline-none focus-visible:border-cyan"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

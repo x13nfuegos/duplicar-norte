@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { track } from "@/lib/analytics/client";
 
 interface Props {
   /** Cierra la intro y revela el mapa, que ya está montado debajo. */
@@ -322,6 +323,7 @@ export default function IntroVideo({ onFin }: Props) {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
+            track("intro_skip");
             salir();
           }}
           className="label-tech rounded-full bg-black/30 px-3.5 py-2 text-[9px] text-white/75 backdrop-blur-sm transition-colors hover:bg-black/50 hover:text-white md:px-4 md:text-[10px]"

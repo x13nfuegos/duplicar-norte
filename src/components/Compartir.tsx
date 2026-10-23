@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { track } from "@/lib/analytics/client";
 
 interface Props {
   /** Ruta interna a compartir (ej. `/contenido/catriel`). */
@@ -22,6 +23,7 @@ export default function Compartir({ ruta, titulo }: Props) {
   const urlAbsoluta = () => new URL(ruta, window.location.origin).toString();
 
   const porWhatsApp = () => {
+    track("share", { via: "whatsapp", ruta });
     const texto = `${titulo} — Programa Duplicar Norte\n${urlAbsoluta()}`;
     // Primero la app instalada (WhatsApp de escritorio o del teléfono, vía su
     // protocolo). Si en un ratito seguimos viendo la página —no hay app que
@@ -40,6 +42,7 @@ export default function Compartir({ ruta, titulo }: Props) {
   // mailto: a secas se lleva la sorpresa de que se abra Outlook.
   const porCorreo = (via: "gmail" | "outlook" | "app") => {
     setMenuCorreo(false);
+    track("share", { via: `correo_${via}`, ruta });
     const asunto = `${titulo} — Programa Duplicar Norte`;
     const cuerpo = `Mirá este contenido del Programa Duplicar Norte:\n\n${titulo}\n${urlAbsoluta()}`;
     const s = encodeURIComponent(asunto);
@@ -72,6 +75,7 @@ export default function Compartir({ ruta, titulo }: Props) {
   }, [menuCorreo]);
 
   const copiarLink = async () => {
+    track("share", { via: "link", ruta });
     const url = urlAbsoluta();
     try {
       await navigator.clipboard.writeText(url);

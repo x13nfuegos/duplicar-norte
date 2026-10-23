@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
+import Tracker from "@/components/analytics/Tracker";
 import "./globals.css";
-import "maplibre-gl/dist/maplibre-gl.css";
 
 /**
  * Montserrat en toda la página, en tres pesos: Light para los titulares
@@ -35,7 +35,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es-AR" className={`${montserrat.variable} h-full`}>
-      <body className="min-h-full antialiased">{children}</body>
+      <body className="min-h-full antialiased">
+        {children}
+        <Tracker />
+      </body>
     </html>
   );
 }

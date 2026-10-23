@@ -6,6 +6,7 @@ import Player from "@vimeo/player";
 import Cover from "@/components/Cover";
 import Compartir from "@/components/Compartir";
 import BotonPantallaCompleta from "@/components/BotonPantallaCompleta";
+import { track } from "@/lib/analytics/client";
 import { vimeoEmbedUrl } from "@/lib/vimeo";
 import { especialRelacionado } from "@/lib/content/sugerencias";
 import type { Content } from "@/lib/types";
@@ -78,6 +79,11 @@ export default function SeriePlayer({ simples, especiales, slugInicial }: Props)
       p.unload().catch(() => {});
     };
   }, [actual.id, reproduciendo, siguiente]);
+
+  // Un play por cada video que arranca, incluidos los que encadena solo.
+  useEffect(() => {
+    if (reproduciendo) track("video_play", { slug: actual.slug, origen: "serie" });
+  }, [reproduciendo, actual.slug]);
 
   /* ---------------- Teclado ---------------- */
 
@@ -262,6 +268,7 @@ function ItemLista({
           url={contenido.coverUrl}
           alt=""
           className={bloqueado ? "grayscale" : ""}
+          tamanoVimeo="295x166"
         />
       </span>
 

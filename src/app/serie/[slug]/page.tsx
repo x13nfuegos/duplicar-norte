@@ -16,6 +16,18 @@ export async function generateMetadata(props: PageProps<"/serie/[slug]">): Promi
   };
 }
 
+// Página cacheada: se sirve estática y se regenera como máximo una vez por
+// minuto. Un cambio hecho en el backoffice se ve en el sitio en ese margen
+// (y al instante en el deploy donde corre el propio backoffice, que además
+// revalida a mano). Sin esto cada visita renderizaba y consultaba la base.
+export const revalidate = 60;
+
+// Se pregeneran al compilar; las que se publiquen después se generan en la
+// primera visita y quedan cacheadas igual (dynamicParams por defecto).
+export async function generateStaticParams() {
+  return (await getSimples()).map((s) => ({ slug: s.slug }));
+}
+
 export default async function SerieItemPage(props: PageProps<"/serie/[slug]">) {
   const { slug } = await props.params;
   const [simples, especiales] = await Promise.all([getSimples(), getEspeciales()]);

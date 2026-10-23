@@ -7,6 +7,7 @@ import "./setup";
 import { useRouter } from "next/navigation";
 import { ARGENTINA_BOUNDS, ESTACIONES, ZOOM_MAX, ZOOM_MIN } from "@/data/traza";
 import type { MappedContent } from "@/lib/types";
+import { track } from "@/lib/analytics/client";
 import { ALTO_CAJON_MAX, ALTO_CAJON_RELATIVO } from "@/components/rail/medidas";
 import { hrefDeContenido } from "@/components/rail/ContentCard";
 import { ATRIBUCION, NOMBRE_CAPA, RASTER, VELO, buildStyle, type Basemap } from "./mapStyle";
@@ -244,6 +245,7 @@ export default function TrazaMap({ contenidos, traza, paddingInferior }: Props) 
         ev.stopPropagation();
         // Bloqueado: solo la ficha, que ya avisa que viene pronto.
         if (c.locked) return abrirTarjeta(c);
+        track("map_point_open", { slug: c.slug });
         // En touch el primer toque abre la ficha flotante; la navegación se
         // hace desde el botón de la tarjeta.
         if (window.matchMedia("(hover: hover)").matches) router.push(hrefDeContenido(c));

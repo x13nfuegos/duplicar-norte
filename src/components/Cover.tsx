@@ -7,6 +7,18 @@ interface Props {
   className?: string;
   /** Texto corto sobre el fondo generado, cuando no hay imagen. */
   etiqueta?: string | null;
+  /**
+   * Tamaño a pedirle a Vimeo ("640", "295x166"...) cuando la portada sale de su
+   * CDN. Sin esto una tarjeta de 244 px baja la miniatura de 1280 px (140 KB)
+   * en vez de la de 640 px (40 KB).
+   */
+  tamanoVimeo?: string;
+}
+
+/** Cambia el tamaño de una miniatura de Vimeo; cualquier otra URL queda igual. */
+function conTamano(url: string, tamano?: string): string {
+  if (!tamano) return url;
+  return url.replace(/(i\.vimeocdn\.com\/video\/[^?]*?)-d_\d+(?:x\d+)?/, `$1-d_${tamano}`);
 }
 
 /**
@@ -21,12 +33,19 @@ interface Props {
  * Supabase Storage o de URLs externas que el backoffice define en runtime, y
  * `next/image` exigiría declarar cada host en `next.config`.
  */
-export default function Cover({ slug, url, alt = "", className = "", etiqueta }: Props) {
+export default function Cover({
+  slug,
+  url,
+  alt = "",
+  className = "",
+  etiqueta,
+  tamanoVimeo,
+}: Props) {
   if (url) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={url}
+        src={conTamano(url, tamanoVimeo)}
         alt={alt}
         loading="lazy"
         decoding="async"

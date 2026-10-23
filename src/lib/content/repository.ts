@@ -1,6 +1,7 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import { cache } from "react";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Block, Content, ContentStatus, ContentType, Rail } from "@/lib/types";
 import { isMapped, type MappedContent } from "@/lib/types";
 import { completarDesdeVimeo } from "@/lib/vimeo-server";
@@ -102,8 +103,8 @@ function avisarFallback(motivo: string) {
 }
 
 /** Todos los contenidos publicados, ya ordenados y con los datos de Vimeo. */
-export async function getPublishedContents(): Promise<Content[]> {
-  const supabase = await createClient();
+export const getPublishedContents = cache(async (): Promise<Content[]> => {
+  const supabase = createPublicClient();
   if (!supabase) {
     avisarFallback("Supabase no está configurado");
     return completarDesdeVimeo(publicados(SEED_CONTENIDOS));
@@ -121,7 +122,7 @@ export async function getPublishedContents(): Promise<Content[]> {
   }
 
   return completarDesdeVimeo((data as unknown as ContentRow[]).map(toContent));
-}
+});
 
 function publicados(items: Content[]): Content[] {
   return items
@@ -152,8 +153,8 @@ export async function getSimples(): Promise<Content[]> {
     .sort((a, b) => a.orderIndex - b.orderIndex);
 }
 
-export async function getContentBySlug(slug: string): Promise<Content | null> {
-  const supabase = await createClient();
+export const getContentBySlug = cache(async (slug: string): Promise<Content | null> => {
+  const supabase = createPublicClient();
 
   const delSeed = () =>
     SEED_CONTENIDOS.find((c) => c.slug === slug && c.status === "published") ?? null;
@@ -179,7 +180,7 @@ export async function getContentBySlug(slug: string): Promise<Content | null> {
   if (!crudo) return null;
   const [completo] = await completarDesdeVimeo([crudo]);
   return completo;
-}
+});
 
 /** Slugs publicados, para `generateStaticParams`. */
 export async function getPublishedSlugs(): Promise<string[]> {
@@ -189,7 +190,7 @@ export async function getPublishedSlugs(): Promise<string[]> {
 
 /** Filas del carrusel, con sus contenidos ya resueltos. */
 export async function getRails(): Promise<Rail[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const desdeSeed = () => completarFilas(SEED_RAILS.filter((r) => r.items.length > 0));
 
   if (!supabase) return desdeSeed();

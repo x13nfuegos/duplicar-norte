@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Cover from "@/components/Cover";
 import BotonPantallaCompleta from "@/components/BotonPantallaCompleta";
+import { track } from "@/lib/analytics/client";
 import { vimeoEmbedUrl } from "@/lib/vimeo";
 
 interface Props {
@@ -45,7 +46,10 @@ export default function VimeoEmbed({ vimeoId, posterUrl, slug, titulo }: Props) 
   return (
     <button
       type="button"
-      onClick={() => setActivo(true)}
+      onClick={() => {
+        track("video_play", { slug, origen: "ficha" });
+        setActivo(true);
+      }}
       aria-label={titulo ? `Reproducir ${titulo}` : "Reproducir video"}
       className="group relative block aspect-video w-full overflow-hidden rounded-xl border border-line bg-deep outline-none focus-visible:border-cyan"
     >
